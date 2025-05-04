@@ -47,16 +47,15 @@ def uninstall_packages(package_list, adb_command="adb"):
                 lf.write(f"Error: {e.stderr}\n")
             print(f"Failed to uninstall package: {package_name}")
             print(f"Error: {e.stderr}")
-    
+
     # Log Completion
     with open(log_file, "a") as f:
         now = datetime.now()
         f.write(f"\nUninstallation process complete.\n")
         f.write(f"Script ended at {now.strftime('%Y-%m-%d %H:%M:%S')}\n")
-    
+
     print(f"\nUninstallation process complete. Log file: {log_file}")
     messagebox.showinfo("Uninstallation Complete", f"Uninstallation process complete. Log file: {log_file}")
-
 
 
 def load_package_list(file_path, package_list_var):
@@ -77,7 +76,7 @@ def load_package_list(file_path, package_list_var):
         messagebox.showerror("Error", f"Error reading file: {e}")
         return
     package_list_var.set(package_list)  # Update the Tkinter variable
-    return package_list # Return package list for further processing
+    return package_list  # Return package list for further processing
 
 def get_installed_packages(adb_command="adb"):
     """Gets the list of installed packages from the Android device using ADB.
@@ -93,13 +92,13 @@ def get_installed_packages(adb_command="adb"):
         packages = process.stdout.strip().split('\n')
         # Remove "package:" prefix
         packages = [p.replace("package:", "").strip() for p in packages]
-        
+
         # Save to file
         with open("installed_packages.txt", "w") as f:
             f.write("\n".join(packages))
-        
+
         return packages
-    
+
     except subprocess.CalledProcessError as e:
         messagebox.showerror("Error", f"Error getting package list: {e.stderr}")
         return []
@@ -177,6 +176,10 @@ def create_gui():
     get_packages_button = ttk.Button(controls_frame, text="Get Packages", command=lambda: handle_get_packages(), style="TButton")
     get_packages_button.pack(side="left", padx=(0, 0))
 
+    # Frame for Select All Checkbox
+    select_all_frame = ttk.Frame(window,  style='TFrame')
+    select_all_frame.pack(anchor=tk.NW, padx=10, pady=(10, 0))
+
     # Checkbox Frame and Scrollbar
     checkbox_frame = ttk.Frame(window)
     checkbox_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0,10))
@@ -199,6 +202,8 @@ def create_gui():
     canvas.bind_all("<MouseWheel>", on_mousewheel)
 
     checkboxes = []
+    select_all_var = tk.BooleanVar(value=False) # Variable to track select all.
+
     def update_package_listbox():
         """Updates the listbox with checkboxes based on the package list."""
         nonlocal checkboxes
@@ -211,13 +216,23 @@ def create_gui():
 
         if package_list:
             for package in package_list:
-                if filter_text in package.lower(): # Perform case-insensitive filtering
-                    selected = tk.BooleanVar(value=False)
-                    cb = tk.Checkbutton(inner_frame, text=package, variable=selected, bg="#f0f0f0", font=("Arial", 9))
-                    cb.pack(anchor=tk.W, pady=1)
+                if filter_text in package.lower():  # Perform case-insensitive filtering
+                    selected = tk.BooleanVar(value=select_all_var.get()) # Use the select_all_var
+                    cb = ttk.Checkbutton(inner_frame, text=package, variable=selected, style="PackageCheckbox.TCheckbutton")
+                    cb.pack(anchor=tk.W, pady=2)
                     checkboxes.append((cb, selected, package))
-            inner_frame.update_idletasks()
-            canvas.configure(scrollregion=canvas.bbox("all"))
+        inner_frame.update_idletasks()
+        canvas.configure(scrollregion=canvas.bbox("all"))
+
+    def toggle_select_all():
+        """Function to handle select all checkbox"""
+        update_package_listbox() # Call update to redraw checkboxes with new select_all_var value
+
+    # "Select All" checkbox
+    select_all_checkbox = ttk.Checkbutton(select_all_frame, text="Select All", variable=select_all_var, command=toggle_select_all, style="SelectAllCheckbox.TCheckbutton")
+    select_all_checkbox.pack(anchor=tk.W, pady=2)
+
+
 
     def handle_get_packages():
         """Gets the installed packages and updates the listbox."""
@@ -238,9 +253,92 @@ def create_gui():
         else:
             messagebox.showinfo("No Packages Selected", "Select packages to uninstall.")
 
+    def save_selection():
+        """Saves the currently selected packages to a file."""
+        selected_packages = []
+        for cb, selected, package in checkboxes:
+            if selected.get():
+                selected_packages.append(package)
+        if selected_packages:
+            file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text Files", "*.txt")])
+            if file_path:
+                try:
+                    with open(file_path, "w") as f:
+                        f.write("\n".join(selected_packages))
+                    messagebox.showinfo("Selection Saved", f"Selected packages saved to {os.path.basename(file_path)}")
+                except Exception as e:
+                    messagebox.showerror("Error", f"Error saving file: {e}")
+        else:
+            messagebox.showinfo("No Packages Selected", "No packages selected to save.")
+
+    def load_selection():
+        """Loads a selection of packages from a file and updates the checkboxes."""
+        file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
+        if file_path:
+            try:
+                with open(file_path, "r") as f:
+                    saved_packages = [line.strip() for line in f]
+                # Uncheck all first
+                for cb, selected, _ in checkboxes:
+                    selected.set(False)
+                #check the packages.
+                for cb, selected, package in checkboxes:
+                    if package in saved_packages:
+                        selected.set(True)
+                messagebox.showinfo("Selection Loaded", "Selected packages loaded.")
+            except Exception as e:
+                messagebox.showerror("Error", f"Error loading file: {e}")
+    # Frame for buttons at the bottom
+    bottom_button_frame = ttk.Frame(window)
+    bottom_button_frame.pack(side=tk.BOTTOM, anchor="se", padx=20, pady=15)
+
     # Uninstall button
-    uninstall_button = ttk.Button(window, text="Uninstall", command=on_uninstall, style="TButton")
-    uninstall_button.pack(pady=15, anchor="w", padx=20)
+    uninstall_button = ttk.Button(bottom_button_frame, text="Uninstall", command=on_uninstall, style="TButton")
+    uninstall_button.pack(side=tk.RIGHT)
+
+    # Save Selection button
+    save_button = ttk.Button(bottom_button_frame, text="Save Selection", command=save_selection, style="TButton")
+    save_button.pack(side=tk.RIGHT, padx=(0, 10))  # Add some padding
+
+    # Load Selection button
+    load_button = ttk.Button(bottom_button_frame, text="Load Selection", command=load_selection, style="TButton")
+    load_button.pack(side=tk.RIGHT, padx=(0, 10))
+
+    # Define a style for the checkboxes
+    checkbox_style = ttk.Style()
+    checkbox_style.configure("PackageCheckbox.TCheckbutton",
+        font=("Arial", 11),
+        foreground="#2c3e50",
+        background="#f0f0f0",
+        borderwidth=0,
+        relief="flat",
+        indicatorcolor="#ffffff",  # Make the check box itself white
+        highlightthickness=0,
+        highlightcolor="#f0f0f0",
+        )
+    checkbox_style.map("PackageCheckbox.TCheckbutton",
+        background=[("active", "#f0f0f0"), ("selected", "#3498db")],  # Keep background the same, change when selected.
+        foreground=[("active", "#2c3e50"), ("selected", "#ffffff")],
+        indicatorcolor=[("selected", "#3498db")] # Change color of check when selected.
+    )
+    #define style for select all checkbox
+    checkbox_style.configure("SelectAllCheckbox.TCheckbutton",
+        font=("Arial", 12, "bold"),
+        foreground="#e74c3c",  # Distinct color
+        background="#f0f0f0",
+        borderwidth=0,
+        relief="flat",
+        indicatorcolor="#ffffff",
+        highlightthickness=0,
+        highlightcolor="#f0f0f0",
+        )
+    checkbox_style.map("SelectAllCheckbox.TCheckbutton",
+        background=[("active", "#f0f0f0"), ("selected", "#e74c3c")],
+        foreground=[("active", "#e74c3c"), ("selected", "#ffffff")],
+        indicatorcolor=[("selected", "#e74c3c")]
+    )
+
+
 
     window.mainloop()
 
