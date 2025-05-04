@@ -55,7 +55,8 @@ def uninstall_packages(package_list, adb_command="adb"):
         f.write(f"Script ended at {now.strftime('%Y-%m-%d %H:%M:%S')}\n")
 
     print(f"\nUninstallation process complete. Log file: {log_file}")
-    messagebox.showinfo("Uninstallation Complete", f"Uninstallation process complete. Log file: {log_file}")
+    # Removed message box
+    # messagebox.showinfo("Uninstallation Complete", f"Uninstallation process complete. Log file: {log_file}")
 
 
 def load_package_list(file_path, package_list_var):
@@ -240,7 +241,8 @@ def create_gui():
         if packages:
             package_list_var.set(packages)
             update_package_listbox()
-            messagebox.showinfo("Packages Loaded", "Installed packages loaded.")
+            # Removed message box
+            # messagebox.showinfo("Packages Loaded", "Installed packages loaded.")
 
     def on_uninstall():
         """Handles the uninstall button click."""
@@ -251,7 +253,9 @@ def create_gui():
         if packages_to_uninstall:
             uninstall_packages(packages_to_uninstall)
         else:
-            messagebox.showinfo("No Packages Selected", "Select packages to uninstall.")
+            # Removed message box
+            # messagebox.showinfo("No Packages Selected", "Select packages to uninstall.")
+            pass
 
     def save_selection():
         """Saves the currently selected packages to a file."""
@@ -260,23 +264,26 @@ def create_gui():
             if selected.get():
                 selected_packages.append(package)
         if selected_packages:
-            file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text Files", "*.txt")])
-            if file_path:
-                try:
-                    with open(file_path, "w") as f:
-                        f.write("\n".join(selected_packages))
-                    messagebox.showinfo("Selection Saved", f"Selected packages saved to {os.path.basename(file_path)}")
-                except Exception as e:
-                    messagebox.showerror("Error", f"Error saving file: {e}")
+            # Use a fixed filename "saved_selection.txt" in the same directory
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            save_file_path = os.path.join(script_dir, "saved_selection.txt")
+            try:
+                with open(save_file_path, "w") as f:
+                    f.write("\n".join(selected_packages))
+                # No message box here
+            except Exception as e:
+                messagebox.showerror("Error", f"Error saving file: {e}")
         else:
-            messagebox.showinfo("No Packages Selected", "No packages selected to save.")
+             pass # Dont show message box
 
     def load_selection():
         """Loads a selection of packages from a file and updates the checkboxes."""
-        file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
-        if file_path:
+        # Use the same fixed filename "saved_selection.txt"
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        load_file_path = os.path.join(script_dir, "saved_selection.txt")
+        if os.path.exists(load_file_path): #check if file exists
             try:
-                with open(file_path, "r") as f:
+                with open(load_file_path, "r") as f:
                     saved_packages = [line.strip() for line in f]
                 # Uncheck all first
                 for cb, selected, _ in checkboxes:
@@ -285,9 +292,12 @@ def create_gui():
                 for cb, selected, package in checkboxes:
                     if package in saved_packages:
                         selected.set(True)
-                messagebox.showinfo("Selection Loaded", "Selected packages loaded.")
+                # No message box here.
             except Exception as e:
                 messagebox.showerror("Error", f"Error loading file: {e}")
+        else:
+            pass # File does not exist, do nothing
+
     # Frame for buttons at the bottom
     bottom_button_frame = ttk.Frame(window)
     bottom_button_frame.pack(side=tk.BOTTOM, anchor="se", padx=20, pady=15)
@@ -338,8 +348,8 @@ def create_gui():
         indicatorcolor=[("selected", "#e74c3c")]
     )
 
-
-
+    # Load selection at start.
+    load_selection()
     window.mainloop()
 
 if __name__ == "__main__":

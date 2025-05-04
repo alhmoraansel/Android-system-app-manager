@@ -1,0 +1,8 @@
+com.android.companiondevicemanager.auto_generated_characteristics_rro
+com.google.android.providers.media.module
+com.google.android.overlay.modules.permissioncontroller.forframework
+com.novatek.novavis
+com.qualcomm.qti.lpa
+com.qualcomm.qti.cne
+com.android.systemui.accessibility.accessibilitymenu
+com.android.overlay.gmscontactprovider
