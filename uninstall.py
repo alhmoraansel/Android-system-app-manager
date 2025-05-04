@@ -189,7 +189,7 @@ def get_installed_packages(adb_command="adb"):
 def create_gui():
     """Creates the main GUI window."""
     window = tk.Tk()
-    window.title("ADB Package Uninstaller/Reinstaller/Installer") # Changed title
+    window.title("ADB Package Uninstaller/Reinstaller/Installer")  # Changed title
     window.geometry("600x400")
     window.minsize(640, 480)  # Set minimum size here
     window.configure(bg="#f0f0f0")  # Light gray background
@@ -265,7 +265,7 @@ def create_gui():
 
     # Checkbox Frame and Scrollbar
     checkbox_frame = ttk.Frame(window)
-    checkbox_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0,10))
+    checkbox_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
 
     canvas = tk.Canvas(checkbox_frame, bg="#f0f0f0", highlightthickness=0)
     canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -285,12 +285,12 @@ def create_gui():
     canvas.bind_all("<MouseWheel>", on_mousewheel)
 
     checkboxes = []
-    select_all_var = tk.BooleanVar(value=False) # Variable to track select all.
+    select_all_var = tk.BooleanVar(value=False)  # Variable to track select all.
 
     def update_package_listbox():
         """Updates the listbox with checkboxes based on the package list."""
         nonlocal checkboxes
-        for cb, _, _ in checkboxes: # Fix: Iterate and destroy the Checkbutton widget.
+        for cb, _, _ in checkboxes:  # Fix: Iterate and destroy the Checkbutton widget.
             cb.destroy()
         checkboxes = []
 
@@ -300,7 +300,7 @@ def create_gui():
         if package_list:
             for package in package_list:
                 if filter_text in package.lower():  # Perform case-insensitive filtering
-                    selected = tk.BooleanVar(value=select_all_var.get()) # Use the select_all_var
+                    selected = tk.BooleanVar(value=select_all_var.get())  # Use the select_all_var
                     cb = ttk.Checkbutton(inner_frame, text=package, variable=selected, style="PackageCheckbox.TCheckbutton")
                     cb.pack(anchor=tk.W, pady=2)
                     checkboxes.append((cb, selected, package))
@@ -309,7 +309,7 @@ def create_gui():
 
     def toggle_select_all():
         """Function to handle select all checkbox"""
-        update_package_listbox() # Call update to redraw checkboxes with new select_all_var value
+        update_package_listbox()  # Call update to redraw checkboxes with new select_all_var value
 
     # "Select All" checkbox
     select_all_checkbox = ttk.Checkbutton(select_all_frame, text="Select All", variable=select_all_var, command=toggle_select_all, style="SelectAllCheckbox.TCheckbutton")
@@ -382,21 +382,21 @@ def create_gui():
             except Exception as e:
                 messagebox.showerror("Error", f"Error saving file: {e}")
         else:
-            pass # Dont show message box
+            pass  # Dont show message box
 
     def load_selection():
         """Loads a selection of packages from a file and updates the checkboxes."""
         # Use the same fixed filename "saved_selection.txt"
         script_dir = os.path.dirname(os.path.abspath(__file__))
         load_file_path = os.path.join(script_dir, "saved_selection.txt")
-        if os.path.exists(load_file_path): #check if file exists
+        if os.path.exists(load_file_path):  # check if file exists
             try:
                 with open(load_file_path, "r") as f:
                     saved_packages = [line.strip() for line in f]
                 # Uncheck all first
                 for cb, selected, _ in checkboxes:
                     selected.set(False)
-                #check the packages.
+                # check the packages.
                 for cb, selected, package in checkboxes:
                     if package in saved_packages:
                         selected.set(True)
@@ -404,7 +404,14 @@ def create_gui():
             except Exception as e:
                 messagebox.showerror("Error", f"Error loading file: {e}")
         else:
-            pass # File does not exist, do nothing
+            pass  # File does not exist, do nothing
+
+    def clear_selection():
+        """Clears the current selection of packages."""
+        for cb, selected, _ in checkboxes:
+            selected.set(False)
+        # update the listbox to reflect changes
+        update_package_listbox()
 
     # Frame for buttons at the bottom
     bottom_button_frame = ttk.Frame(window)
@@ -430,6 +437,10 @@ def create_gui():
     load_button = ttk.Button(bottom_button_frame, text="Load Selection", command=load_selection, style="TButton")
     load_button.pack(side=tk.RIGHT, padx=(0, 10))
 
+    # Clear Selection button
+    clear_button = ttk.Button(bottom_button_frame, text="Clear Selection", command=clear_selection, style="TButton")
+    clear_button.pack(side=tk.RIGHT, padx=(0, 10))  # Add the Clear Selection button
+
     # Define a style for the checkboxes
     checkbox_style = ttk.Style()
     checkbox_style.configure("PackageCheckbox.TCheckbutton",
@@ -445,9 +456,9 @@ def create_gui():
     checkbox_style.map("PackageCheckbox.TCheckbutton",
         background=[("active", "#f0f0f0"), ("selected", "#3498db")],  # Keep background the same, change when selected.
         foreground=[("active", "#2c3e50"), ("selected", "#ffffff")],
-        indicatorcolor=[("selected", "#3498db")] # Change color of check when selected.
+        indicatorcolor=[("selected", "#3498db")]  # Change color of check when selected.
     )
-    #define style for select all checkbox
+    # define style for select all checkbox
     checkbox_style.configure("SelectAllCheckbox.TCheckbutton",
         font=("Arial", 12, "bold"),
         foreground="#e74c3c",  # Distinct color
@@ -470,4 +481,3 @@ def create_gui():
 
 if __name__ == "__main__":
     create_gui()
-
