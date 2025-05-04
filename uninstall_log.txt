@@ -1,0 +1,94 @@
+Script started at 2025-05-04 10:05:09
+Reinstalling packages using adb shell pm install -r --user 0...
+
+Reinstalling package: com.google.android.providers.media.module
+Failed to reinstall package: com.google.android.providers.media.module
+Error: Error: Unable to open file: com.google.android.providers.media.module
+Consider using a file under /data/local/tmp/
+Error: Can't open file: com.google.android.providers.media.module
+
+Exception occurred while executing 'install':
+java.lang.IllegalArgumentException: Error: Can't open file: com.google.android.providers.media.module
+	at com.android.server.pm.PackageManagerShellCommand.setParamsSize(PackageManagerShellCommand.java:707)
+	at com.android.server.pm.PackageManagerShellCommand.doRunInstall(PackageManagerShellCommand.java:1635)
+	at com.android.server.pm.PackageManagerShellCommand.runInstall(PackageManagerShellCommand.java:1581)
+	at com.android.server.pm.PackageManagerShellCommand.onCommand(PackageManagerShellCommand.java:245)
+	at com.android.modules.utils.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:97)
+	at android.os.ShellCommand.exec(ShellCommand.java:38)
+	at com.android.server.pm.PackageManagerService$IPackageManagerImpl.onShellCommand(PackageManagerService.java:6796)
+	at android.os.Binder.shellCommand(Binder.java:1237)
+	at android.os.Binder.onTransact(Binder.java:1050)
+	at android.content.pm.IPackageManager$Stub.onTransact(IPackageManager.java:4620)
+	at com.android.server.pm.PackageManagerService$IPackageManagerImpl.onTransact(PackageManagerService.java:6780)
+	at android.os.Binder.execTransactInternal(Binder.java:1512)
+	at android.os.Binder.execTransact(Binder.java:1451)
+
+Reinstalling package: com.google.android.overlay.modules.permissioncontroller.forframework
+Failed to reinstall package: com.google.android.overlay.modules.permissioncontroller.forframework
+Error: Error: Unable to open file: com.google.android.overlay.modules.permissioncontroller.forframework
+Consider using a file under /data/local/tmp/
+Error: Can't open file: com.google.android.overlay.modules.permissioncontroller.forframework
+
+Exception occurred while executing 'install':
+java.lang.IllegalArgumentException: Error: Can't open file: com.google.android.overlay.modules.permissioncontroller.forframework
+	at com.android.server.pm.PackageManagerShellCommand.setParamsSize(PackageManagerShellCommand.java:707)
+	at com.android.server.pm.PackageManagerShellCommand.doRunInstall(PackageManagerShellCommand.java:1635)
+	at com.android.server.pm.PackageManagerShellCommand.runInstall(PackageManagerShellCommand.java:1581)
+	at com.android.server.pm.PackageManagerShellCommand.onCommand(PackageManagerShellCommand.java:245)
+	at com.android.modules.utils.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:97)
+	at android.os.ShellCommand.exec(ShellCommand.java:38)
+	at com.android.server.pm.PackageManagerService$IPackageManagerImpl.onShellCommand(PackageManagerService.java:6796)
+	at android.os.Binder.shellCommand(Binder.java:1237)
+	at android.os.Binder.onTransact(Binder.java:1050)
+	at android.content.pm.IPackageManager$Stub.onTransact(IPackageManager.java:4620)
+	at com.android.server.pm.PackageManagerService$IPackageManagerImpl.onTransact(PackageManagerService.java:6780)
+	at android.os.Binder.execTransactInternal(Binder.java:1512)
+	at android.os.Binder.execTransact(Binder.java:1451)
+
+Reinstalling package: com.google.android.cellbroadcastreceiver
+Failed to reinstall package: com.google.android.cellbroadcastreceiver
+Error: Error: Unable to open file: com.google.android.cellbroadcastreceiver
+Consider using a file under /data/local/tmp/
+Error: Can't open file: com.google.android.cellbroadcastreceiver
+
+Exception occurred while executing 'install':
+java.lang.IllegalArgumentException: Error: Can't open file: com.google.android.cellbroadcastreceiver
+	at com.android.server.pm.PackageManagerShellCommand.setParamsSize(PackageManagerShellCommand.java:707)
+	at com.android.server.pm.PackageManagerShellCommand.doRunInstall(PackageManagerShellCommand.java:1635)
+	at com.android.server.pm.PackageManagerShellCommand.runInstall(PackageManagerShellCommand.java:1581)
+	at com.android.server.pm.PackageManagerShellCommand.onCommand(PackageManagerShellCommand.java:245)
+	at com.android.modules.utils.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:97)
+	at android.os.ShellCommand.exec(ShellCommand.java:38)
+	at com.android.server.pm.PackageManagerService$IPackageManagerImpl.onShellCommand(PackageManagerService.java:6796)
+	at android.os.Binder.shellCommand(Binder.java:1237)
+	at android.os.Binder.onTransact(Binder.java:1050)
+	at android.content.pm.IPackageManager$Stub.onTransact(IPackageManager.java:4620)
+	at com.android.server.pm.PackageManagerService$IPackageManagerImpl.onTransact(PackageManagerService.java:6780)
+	at android.os.Binder.execTransactInternal(Binder.java:1512)
+	at android.os.Binder.execTransact(Binder.java:1451)
+
+Reinstalling package: com.google.android.photopicker
+Failed to reinstall package: com.google.android.photopicker
+Error: Error: Unable to open file: com.google.android.photopicker
+Consider using a file under /data/local/tmp/
+Error: Can't open file: com.google.android.photopicker
+
+Exception occurred while executing 'install':
+java.lang.IllegalArgumentException: Error: Can't open file: com.google.android.photopicker
+	at com.android.server.pm.PackageManagerShellCommand.setParamsSize(PackageManagerShellCommand.java:707)
+	at com.android.server.pm.PackageManagerShellCommand.doRunInstall(PackageManagerShellCommand.java:1635)
+	at com.android.server.pm.PackageManagerShellCommand.runInstall(PackageManagerShellCommand.java:1581)
+	at com.android.server.pm.PackageManagerShellCommand.onCommand(PackageManagerShellCommand.java:245)
+	at com.android.modules.utils.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:97)
+	at android.os.ShellCommand.exec(ShellCommand.java:38)
+	at com.android.server.pm.PackageManagerService$IPackageManagerImpl.onShellCommand(PackageManagerService.java:6796)
+	at android.os.Binder.shellCommand(Binder.java:1237)
+	at android.os.Binder.onTransact(Binder.java:1050)
+	at android.content.pm.IPackageManager$Stub.onTransact(IPackageManager.java:4620)
+	at com.android.server.pm.PackageManagerService$IPackageManagerImpl.onTransact(PackageManagerService.java:6780)
+	at android.os.Binder.execTransactInternal(Binder.java:1512)
+	at android.os.Binder.execTransact(Binder.java:1451)
+
+
+Reinstallation process complete.
+Script ended at 2025-05-04 10:05:10

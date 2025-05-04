@@ -5,13 +5,14 @@ from tkinter import filedialog, messagebox
 from tkinter import ttk
 from datetime import datetime
 
-def uninstall_packages(package_list, adb_command="adb"):
+def uninstall_packages(package_list, adb_command="adb", reinstall=False):
     """
-    Uninstalls APK packages from a list using ADB and saves logs.
+    Uninstalls or reinstalls APK packages from a list using ADB and saves logs.
 
     Args:
-        package_list (list): A list of package names to uninstall.
+        package_list (list): A list of package names to uninstall/reinstall.
         adb_command (str, optional): The ADB command. Defaults to "adb".
+        reinstall (bool, optional): If True, reinstall packages. Defaults to False.
     """
     log_file = "uninstall_log.txt"
 
@@ -19,44 +20,125 @@ def uninstall_packages(package_list, adb_command="adb"):
     with open(log_file, "w") as f:
         now = datetime.now()
         f.write(f"Script started at {now.strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write(f"Uninstalling packages using adb shell pm uninstall --user 0...\n\n")
+        if reinstall:
+            f.write(f"Reinstalling packages using adb shell pm install -r --user 0...\n\n")
+        else:
+            f.write(f"Uninstalling packages using adb shell pm uninstall --user 0...\n\n")
 
-    # Uninstall each package in the list
+    # Uninstall/reinstall each package in the list
     for package_name in package_list:
-        print(f"Uninstalling package: {package_name}")
-        with open(log_file, "a") as lf:
-            lf.write(f"Uninstalling package: {package_name}\n")
+        if reinstall:
+            print(f"Reinstalling package: {package_name}")
+            with open(log_file, "a") as lf:
+                lf.write(f"Reinstalling package: {package_name}\n")
+        else:
+            print(f"Uninstalling package: {package_name}")
+            with open(log_file, "a") as lf:
+                lf.write(f"Uninstalling package: {package_name}\n")
 
-        # Use adb shell pm uninstall --user 0
+        # Use adb shell pm uninstall --user 0 or adb shell pm install -r --user 0
+        try:
+            if reinstall:
+                process = subprocess.run(
+                    [adb_command, "shell", "pm", "install-existing", package_name],
+                    capture_output=True,
+                    text=True,
+                    check=True  # Raise an exception for non-zero exit codes
+                )
+                # Log success
+                with open(log_file, "a") as lf:
+                    lf.write(f"Package '{package_name}' reinstalled successfully.\n")
+                print(f"Package '{package_name}' reinstalled successfully.")
+            else:
+                process = subprocess.run(
+                    [adb_command, "shell", "pm", "uninstall", "--user", "0", package_name],
+                    capture_output=True,
+                    text=True,
+                    check=True  # Raise an exception for non-zero exit codes
+                )
+                # Log success
+                with open(log_file, "a") as lf:
+                    lf.write(f"Package '{package_name}' uninstalled successfully.\n")
+                print(f"Package '{package_name}' uninstalled successfully.")
+
+        except subprocess.CalledProcessError as e:
+            # Log failure
+            with open(log_file, "a") as lf:
+                if reinstall:
+                    lf.write(f"Failed to reinstall package: {package_name}\n")
+                else:
+                    lf.write(f"Failed to uninstall package: {package_name}\n")
+                lf.write(f"Error: {e.stderr}\n")
+            print(f"Failed to uninstall/reinstall package: {package_name}")
+            print(f"Error: {e.stderr}")
+
+    # Log Completion
+    with open(log_file, "a") as f:
+        now = datetime.now()
+        if reinstall:
+            f.write(f"\nReinstallation process complete.\n")
+        else:
+            f.write(f"\nUninstallation process complete.\n")
+        f.write(f"Script ended at {now.strftime('%Y-%m-%d %H:%M:%S')}\n")
+
+    print(f"\nProcess complete. Log file: {log_file}")
+    # Removed message box
+    # messagebox.showinfo("Process Complete", f"Process complete. Log file: {log_file}")
+
+
+
+def install_existing_packages(package_list, adb_command="adb"):
+    """
+    Installs existing APK packages from a list using ADB and saves logs.
+
+    Args:
+        package_list (list): A list of package names to install.
+        adb_command (str, optional): The ADB command. Defaults to "adb".
+    """
+    log_file = "install_existing_log.txt"
+
+    # Create the log file
+    with open(log_file, "w") as f:
+        now = datetime.now()
+        f.write(f"Script started at {now.strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"Installing existing packages using adb shell pm install-existing...\n\n")
+
+    # Install each package in the list
+    for package_name in package_list:
+        print(f"Installing existing package: {package_name}")
+        with open(log_file, "a") as lf:
+            lf.write(f"Installing existing package: {package_name}\n")
+
+        # Use adb shell pm install-existing
         try:
             process = subprocess.run(
-                [adb_command, "shell", "pm", "uninstall", "--user", "0", package_name],
+                [adb_command, "shell", "pm", "install-existing", package_name],
                 capture_output=True,
                 text=True,
                 check=True  # Raise an exception for non-zero exit codes
             )
             # Log success
             with open(log_file, "a") as lf:
-                lf.write(f"Package '{package_name}' uninstalled successfully.\n")
-            print(f"Package '{package_name}' uninstalled successfully.")
+                lf.write(f"Package '{package_name}' installed successfully.\n")
+            print(f"Package '{package_name}' installed successfully.")
 
         except subprocess.CalledProcessError as e:
             # Log failure
             with open(log_file, "a") as lf:
-                lf.write(f"Failed to uninstall package: {package_name}\n")
+                lf.write(f"Failed to install existing package: {package_name}\n")
                 lf.write(f"Error: {e.stderr}\n")
-            print(f"Failed to uninstall package: {package_name}")
+            print(f"Failed to install existing package: {package_name}")
             print(f"Error: {e.stderr}")
 
     # Log Completion
     with open(log_file, "a") as f:
         now = datetime.now()
-        f.write(f"\nUninstallation process complete.\n")
+        f.write(f"\nInstallation process complete.\n")
         f.write(f"Script ended at {now.strftime('%Y-%m-%d %H:%M:%S')}\n")
 
-    print(f"\nUninstallation process complete. Log file: {log_file}")
+    print(f"\nInstallation process complete. Log file: {log_file}")
     # Removed message box
-    # messagebox.showinfo("Uninstallation Complete", f"Uninstallation process complete. Log file: {log_file}")
+    # messagebox.showinfo("Installation Complete", f"Installation process complete. Log file: {log_file}")
 
 
 def load_package_list(file_path, package_list_var):
@@ -107,7 +189,7 @@ def get_installed_packages(adb_command="adb"):
 def create_gui():
     """Creates the main GUI window."""
     window = tk.Tk()
-    window.title("ADB Package Uninstaller")
+    window.title("ADB Package Uninstaller/Reinstaller/Installer") # Changed title
     window.geometry("600x400")
     window.minsize(640, 480)  # Set minimum size here
     window.configure(bg="#f0f0f0")  # Light gray background
@@ -257,6 +339,32 @@ def create_gui():
             # messagebox.showinfo("No Packages Selected", "Select packages to uninstall.")
             pass
 
+    def on_reinstall():
+        """Handles the reinstall button click."""
+        packages_to_reinstall = []
+        for cb, selected, package in checkboxes:
+            if selected.get():
+                packages_to_reinstall.append(package)
+        if packages_to_reinstall:
+            uninstall_packages(packages_to_reinstall, reinstall=True)
+        else:
+            # Removed message box
+            # messagebox.showinfo("No Packages Selected", "Select packages to reinstall.")
+            pass
+
+    def on_install_existing():
+        """Handles the install existing button click."""
+        packages_to_install = []
+        for cb, selected, package in checkboxes:
+            if selected.get():
+                packages_to_install.append(package)
+        if packages_to_install:
+            install_existing_packages(packages_to_install)
+        else:
+            # Removed message box.
+            # messagebox.showinfo("No Packages Selected", "Select packages to install.", )
+            pass
+
     def save_selection():
         """Saves the currently selected packages to a file."""
         selected_packages = []
@@ -274,7 +382,7 @@ def create_gui():
             except Exception as e:
                 messagebox.showerror("Error", f"Error saving file: {e}")
         else:
-             pass # Dont show message box
+            pass # Dont show message box
 
     def load_selection():
         """Loads a selection of packages from a file and updates the checkboxes."""
@@ -304,7 +412,15 @@ def create_gui():
 
     # Uninstall button
     uninstall_button = ttk.Button(bottom_button_frame, text="Uninstall", command=on_uninstall, style="TButton")
-    uninstall_button.pack(side=tk.RIGHT)
+    uninstall_button.pack(side=tk.LEFT)
+
+    # Reinstall button
+    reinstall_button = ttk.Button(bottom_button_frame, text="Reinstall", command=on_reinstall, style="TButton")
+    reinstall_button.pack(side=tk.LEFT, padx=(0, 10))
+
+    # Install Existing button.  Added this button.
+    install_existing_button = ttk.Button(bottom_button_frame, text="Install Existing", command=on_install_existing, style="TButton")
+    install_existing_button.pack(side=tk.LEFT, padx=(0, 10))
 
     # Save Selection button
     save_button = ttk.Button(bottom_button_frame, text="Save Selection", command=save_selection, style="TButton")
@@ -354,3 +470,4 @@ def create_gui():
 
 if __name__ == "__main__":
     create_gui()
+
