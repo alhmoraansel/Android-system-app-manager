@@ -1,5 +1,13 @@
 # Manage-system-apps
 
+## NOTE:
+1. ADB must be installed on your pc, and added to PATH, you can use chocolatey for installation of adb. (verify by running adb devices).
+2. USB Debugging must be enabled in device you are working (Tip: you can disable usb debugging or whole of developer's options after removing apps you dont want).
+3. The executable file is complete in itself, but if it causes error (or won't open), just install python-latest, and tkinter.
+4. The exe file may take time (at most 10 seconds) to load for the first time.
+5. Make sure to connect device before opening or it may show an error.
+
+
 Manage the system managed apps, remove them or reinstall them as required.
 
 ## Features and Functionality
